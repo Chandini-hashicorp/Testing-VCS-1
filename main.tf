@@ -24,15 +24,14 @@ resource "null_resource" "test_with_trigger" {
   provisioner "local-exec" {
     command = "echo Triggered resource ${each.key} at $(date)"
   }
-
-  depends_on = [
-    time_sleep.wait_after_each
-  ]
 }
 
-# 🔹 Second sleep (after trigger-based resource)
 resource "time_sleep" "wait_after_each_v2" {
   for_each = null_resource.test_with_trigger
 
   create_duration = "15s"
+
+  depends_on = [
+    null_resource.test_with_trigger
+  ]
 }
