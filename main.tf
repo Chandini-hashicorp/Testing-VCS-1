@@ -13,16 +13,26 @@ locals {
   items = toset([for i in range(5) : tostring(i)])
 }
 
-resource "null_resource" "test" {
+resource "null_resource" "test_with_trigger" {
   for_each = local.items
 
-  provisioner "local-exec" {
-    command = "echo Creating resource ${each.key}"
+  triggers = {
+    always_run = timestamp()
+    item       = each.key
   }
+
+  provisioner "local-exec" {
+    command = "echo Triggered resource ${each.key} at $(date)"
+  }
+
+  depends_on = [
+    time_sleep.wait_after_each
+  ]
 }
 
-resource "time_sleep" "wait_after_each" {
-  for_each = null_resource.test
+# 🔹 Second sleep (after trigger-based resource)
+resource "time_sleep" "wait_after_each_v2" {
+  for_each = null_resource.test_with_trigger
 
   create_duration = "15s"
 }
