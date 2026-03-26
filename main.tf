@@ -10,7 +10,7 @@ terraform {
 provider "time" {}
 
 locals {
-  items = toset([for i in range(10) : tostring(i)])
+  items = toset([for i in range(5) : tostring(i)])
 }
 
 resource "null_resource" "test" {
